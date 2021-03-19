@@ -1,5 +1,5 @@
 {
-  "name": "rabbithole",
+  "name": "neo4j-temp-db",
   "version": "0.1.0",
   "description": "expose a temporary database to run cyphers",
   "main": "src/console.js",
