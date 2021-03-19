@@ -9,9 +9,13 @@ export const neo4j_system_driver = neo4j.driver(
   ),
 );
 
+function getCurrentTimestamp() {
+  return Math.floor(new Date().getTime() / 1000);
+}
+
 export async function createDatabase() {
   const sessionId = uuidv4().replace(/-/g, "");
-  const currentTimestamp = Math.floor(new Date().getTime() / 1000);
+  const currentTimestamp = getCurrentTimestamp();
   const database = `console${sessionId}${currentTimestamp}`;
   const session = neo4j_system_driver.session({database: "system", defaultAccessMode: neo4j.session.WRITE});
 
@@ -34,13 +38,54 @@ export async function createDatabase() {
   return database;
 }
 
+async function deleteDatabaseUserAndRole(session, database) {
+  await session.run(`STOP DATABASE ${database};`);
+  await session.run(`DROP DATABASE ${database};`);
+  await session.run(`DROP USER ${database};`);
+  await session.run(`DROP ROLE ${database};`);
+}
+
 export async function cleanDatabase(database) {
   const session = neo4j_system_driver.session({database: "system"});
   try {
-    await session.run(`STOP DATABASE ${database};`);
-    await session.run(`DROP DATABASE ${database};`);
-    await session.run(`DROP USER ${database};`);
-    await session.run(`DROP ROLE ${database};`);
+    await deleteDatabaseUserAndRole(session, database);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await session.close();
+  }
+}
+
+export async function removeDatabasesOlderThan(seconds) {
+  const session = neo4j_system_driver.session({database: "system"});
+  const result = await session.run("SHOW DATABASES");
+  const shouldExpireAt = getCurrentTimestamp() - seconds;
+  try {
+    const records = filterConsoleDatabasesFromResult(result);
+    for(const record of records) {
+      const database = record.get("name");
+      const dbTimestamp = parseInt(database.slice(39), 10);
+      const isExpired = dbTimestamp <= shouldExpireAt;
+      if (isExpired) {
+        await deleteDatabaseUserAndRole(session, database);
+      }
+    };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await session.close();
+  }
+}
+
+export async function cleanAllDatabases() {
+  const session = neo4j_system_driver.session({database: "system"});
+  const result = await session.run("SHOW DATABASES");
+  try {
+    const records = filterConsoleDatabasesFromResult(result);
+    for(const record of records) {
+      const database = record.get("name");
+      await deleteDatabaseUserAndRole(session, database);
+    }
   } catch (error) {
     console.error(error);
   } finally {
@@ -69,4 +114,8 @@ export async function runCypherOnDatabase(cypher, database, params) {
     await session.close();
     await session_driver.close();
   }
+}
+
+export function filterConsoleDatabasesFromResult(result) {
+  return result.records.filter((record) => record.get("name").indexOf("console") === 0);
 }
