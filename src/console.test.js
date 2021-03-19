@@ -7,16 +7,17 @@ beforeAll(async done => {
   done();
 });
 
-test('can create session', async () => {
+test('can create database', async () => {
   const database = await createDatabase();
   const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
   const record = result.records[0];
   expect(record.get("name")).toBe(database);
   expect(record.get("currentStatus")).toBe("online");
+  await cleanDatabase(database);
 });
 
-test('can clean up session', async () => {
+test('can clean up database', async () => {
   const database = await createDatabase();
   const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
@@ -26,10 +27,11 @@ test('can clean up session', async () => {
   expect(cleanResult.records.length).toBe(0);
 });
 
-test('can run cypher on session', async () => {
+test('can run cypher on database', async () => {
   const database = await createDatabase();
-  const result = await runCypherOnDatabase(database, "return 1;");
-  expect(result).toBe(1);
+  const result = await runCypherOnDatabase("RETURN 1;", database);
+  expect(result).toBe("1");
+  await cleanDatabase(database);
 });
 
 afterAll(async done => {
