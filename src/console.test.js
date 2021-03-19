@@ -1,4 +1,4 @@
-import { neo4j_system_driver, createSession, cleanSession, runCypherOnSession } from "./console.js";
+import { neo4j_system_driver, createDatabase, cleanDatabase, runCypherOnDatabase } from "./console.js";
 
 let session;
 
@@ -8,7 +8,7 @@ beforeAll(async done => {
 });
 
 test('can create session', async () => {
-  const database = await createSession();
+  const database = await createDatabase();
   const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
   const record = result.records[0];
@@ -17,18 +17,18 @@ test('can create session', async () => {
 });
 
 test('can clean up session', async () => {
-  const database = await createSession();
+  const database = await createDatabase();
   const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
 
-  await cleanSession(database);
+  await cleanDatabase(database);
   const cleanResult = await session.run("SHOW DATABASE $database", { database });
   expect(cleanResult.records.length).toBe(0);
 });
 
 test('can run cypher on session', async () => {
-  const database = await createSession();
-  const result = await runCypherOnSession(database, "return 1;");
+  const database = await createDatabase();
+  const result = await runCypherOnDatabase(database, "return 1;");
   expect(result).toBe(1);
 });
 

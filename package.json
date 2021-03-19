@@ -35,7 +35,9 @@
     ]
   },
   "jest": {
-    "setupFiles": ["dotenv/config"],
+    "setupFiles": [
+      "dotenv/config"
+    ],
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
     }
