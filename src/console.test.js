@@ -8,27 +8,27 @@ beforeAll(async done => {
 });
 
 test('can create session', async () => {
-  const sessionId = await createSession();
-  const result = await session.run("SHOW DATABASE $sessionId", { sessionId });
+  const database = await createSession();
+  const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
   const record = result.records[0];
-  expect(record.get("name")).toBe(sessionId);
+  expect(record.get("name")).toBe(database);
   expect(record.get("currentStatus")).toBe("online");
 });
 
 test('can clean up session', async () => {
-  const sessionId = await createSession();
-  const result = await session.run("SHOW DATABASE $sessionId", { sessionId });
+  const database = await createSession();
+  const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
 
-  await cleanSession(sessionId);
-  const cleanResult = await session.run("SHOW DATABASE $sessionId", { sessionId });
+  await cleanSession(database);
+  const cleanResult = await session.run("SHOW DATABASE $database", { database });
   expect(cleanResult.records.length).toBe(0);
 });
 
 test('can run cypher on session', async () => {
-  const sessionId = await createSession();
-  const result = await runCypherOnSession(sessionId, "return 1;");
+  const database = await createSession();
+  const result = await runCypherOnSession(database, "return 1;");
   expect(result).toBe(1);
 });
 

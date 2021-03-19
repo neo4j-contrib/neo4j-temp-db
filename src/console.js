@@ -12,20 +12,20 @@ export const neo4j_system_driver = neo4j.driver(
 export async function createSession() {
   const sessionId = uuidv4().replace(/-/g, "");
   const currentTimestamp = Math.floor(new Date().getTime() / 1000);
-  const dbName = `console${sessionId}${currentTimestamp}`;
+  const database = `console${sessionId}${currentTimestamp}`;
   const session = neo4j_system_driver.session({database: "system", defaultAccessMode: neo4j.session.WRITE});
 
   const txc = session.beginTransaction();
   try {
-    await txc.run(`CREATE DATABASE $dbName WAIT;`, { dbName });
-    await txc.run(`CREATE USER $dbName SET PASSWORD '$dbName' SET PASSWORD CHANGE NOT REQUIRED;`, { dbName });
-    await txc.run(`CREATE ROLE $dbName;`, { dbName });
-    await txc.run(`GRANT ROLE $dbName TO $dbName;`, { dbName });
-    await txc.run(`GRANT ALL ON DATABASE $dbName TO $dbName;`, { dbName });
-    await txc.run(`GRANT ACCESS ON DATABASE $dbName TO $dbName;`, { dbName });
-    await txc.run(`GRANT READ {*} ON GRAPH $dbName TO $dbName;`, { dbName });
-    await txc.run(`GRANT TRAVERSE ON GRAPH $dbName TO $dbName;`, { dbName });
-    await txc.run(`GRANT WRITE ON GRAPH $dbName TO $dbName;`, { dbName });
+    await txc.run(`CREATE DATABASE $database WAIT;`, { database });
+    await txc.run(`CREATE USER $database SET PASSWORD '$database' SET PASSWORD CHANGE NOT REQUIRED;`, { database });
+    await txc.run(`CREATE ROLE $database;`, { database });
+    await txc.run(`GRANT ROLE $database TO $database;`, { database });
+    await txc.run(`GRANT ALL ON DATABASE $database TO $database;`, { database });
+    await txc.run(`GRANT ACCESS ON DATABASE $database TO $database;`, { database });
+    await txc.run(`GRANT READ {*} ON GRAPH $database TO $database;`, { database });
+    await txc.run(`GRANT TRAVERSE ON GRAPH $database TO $database;`, { database });
+    await txc.run(`GRANT WRITE ON GRAPH $database TO $database;`, { database });
     await txc.commit();
   } catch (error) {
     console.error(error);
@@ -34,17 +34,17 @@ export async function createSession() {
     await session.close();
   }
 
-  return dbName;
+  return database;
 }
 
-export async function cleanSession(sessionId) {
+export async function cleanSession(database) {
   const session = neo4j_system_driver.session({database: "system"});
   const txc = session.beginTransaction();
   try {
-    await txc.run(`STOP DATABASE $sessionId;`, { sessionId });
-    await txc.run(`DROP DATABASE $sessionId;`, { sessionId });
-    await txc.run(`DROP USER $sessionId;`, { sessionId });
-    await txc.run(`DROP ROLE $sessionId;`, { sessionId });
+    await txc.run(`STOP DATABASE $database;`, { database });
+    await txc.run(`DROP DATABASE $database;`, { database });
+    await txc.run(`DROP USER $database;`, { database });
+    await txc.run(`DROP ROLE $database;`, { database });
     await txc.commit();
   } catch (error) {
     console.error(error);
@@ -54,13 +54,13 @@ export async function cleanSession(sessionId) {
   }
 }
 
-export async function runCypherOnSession(cypher, sessionId, params) {
+export async function runCypherOnSession(cypher, database, params) {
   const session_driver = neo4j.driver(
     process.env.CONSOLE_NEO4J_URI || "bolt://localhost:7687",
-    neo4j.auth.basic(sessionId, sessionId),
+    neo4j.auth.basic(database, database),
   );
   const session = session_driver.session({
-    database: sessionId,
+    database: database,
     defaultAccessMode: neo4j.session.WRITE
   });
   const txc = session.beginTransaction();
