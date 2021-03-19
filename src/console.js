@@ -2,10 +2,10 @@ import neo4j from "neo4j-driver";
 import { v4 as uuidv4 } from "uuid";
 
 export const neo4j_system_driver = neo4j.driver(
-  process.env.CONSOLE_NEO4J_URI || "bolt://localhost:7687",
+  process.env.CONSOLE_NEO4J_URI,
   neo4j.auth.basic(
-    process.env.CONSOLE_NEO4J_USER || "neo4j",
-    process.env.CONSOLE_NEO4J_PASSWORD || "neo4j"
+    process.env.CONSOLE_NEO4J_USER,
+    process.env.CONSOLE_NEO4J_PASSWORD
   ),
 );
 
