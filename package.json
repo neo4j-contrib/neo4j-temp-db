@@ -2,9 +2,11 @@
   "name": "neo4j-temp-db",
   "version": "0.1.0",
   "description": "expose a temporary database to run cyphers",
-  "main": "src/console.js",
+  "main": "dist/console.js",
   "scripts": {
-    "test": "jest"
+    "prettier": "prettier --write",
+    "test": "jest",
+    "build": "babel src --out-dir dist"
   },
   "author": "",
   "license": "MIT",
@@ -21,6 +23,7 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "lodash": "^4.17.21",
     "neo4j-driver": "^4.2.3",
     "uuid": "^8.3.2"
   },
