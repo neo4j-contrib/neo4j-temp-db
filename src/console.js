@@ -1,5 +1,6 @@
 import neo4j from "neo4j-driver";
 import { v4 as uuidv4 } from "uuid";
+import CypherResult from "./CypherResult.js";
 
 export const neo4j_system_driver = neo4j.driver(
   process.env.CONSOLE_NEO4J_URI,
@@ -93,7 +94,7 @@ export async function cleanAllDatabases() {
   }
 }
 
-export async function runCypherOnDatabase(cypher, database, params) {
+export async function runCypherOnDatabase(cypher, database, version, params) {
   const session_driver = neo4j.driver(
     process.env.CONSOLE_NEO4J_URI,
     neo4j.auth.basic(database, database),
@@ -103,11 +104,37 @@ export async function runCypherOnDatabase(cypher, database, params) {
     defaultAccessMode: neo4j.session.WRITE
   });
   try {
-    // cypher 3.5 MATCH ...
-    const result = await session.run(cypher, {...params});
-    return "1";
-    // return CypherResult
-    // https://github.com/neo4j-contrib/rabbithole/blob/f9e4ed8b1dd9edbeba36ab2550613ef48575cf36/src/main/java/org/neo4j/community/console/CypherQueryExecutor.java#L212
+    const startTime = new Date().getTime();
+    const query = `CYPHER ${version} ${cypher}`;
+    const run = session.run(query, {...params});
+    const result = await run;
+    const keys = await run.keys();
+    const summary = result.summary;
+    const records = result.records;
+    const endTime = new Date().getTime();
+    const runTime = endTime - startTime;
+    const stats = summary.counters;
+    const plan = null;
+
+    const r = new CypherResult(keys, records, stats, runTime, plan, query, session);
+
+    return {
+      query: cypher,
+      visualization: await r.cypherQueryViz(r),
+      version: version,
+      // result: r.generateText(),
+      init: null,
+      columns: keys,
+      json: r.createJson(),
+      plan: plan,
+      stats: {
+        ...stats._stats,
+        rows: records.length,
+        time: runTime,
+        // text: stats.toString(),
+        containsUpdates: stats.containsUpdates(),
+      }
+    }
   } catch (error) {
     console.error(error);
   } finally {
