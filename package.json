@@ -5,7 +5,7 @@
   "main": "dist/console.js",
   "scripts": {
     "prettier": "prettier --write",
-    "test": "jest",
+    "test": "jest --testTimeout=30000",
     "build": "babel src --out-dir dist"
   },
   "author": "",

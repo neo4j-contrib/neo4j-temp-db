@@ -122,12 +122,12 @@ test("returns path", async () => {
     "3.5"
   );
 
-  expect(result.stats.rows).toBe(2);
-  expect(result.stats.containsUpdates).toBe(false);
-
   expect(result.visualization).toStrictEqual({"nodes":[{"id":0,"labels":["Movie"],"name":"Episode I: The Phantom Menace","selected":"path"},{"id":1,"labels":["Droid"],"name":"R2-D2","selected":"path"},{"id":2,"labels":["Person"],"name":"YODA","selected":"path"}],"links":[{"end":2,"id":0,"selected":"path","source":1,"start":1,"target":2,"type":"SPEAKS_WITH"},{"end":0,"id":1,"selected":"path","source":2,"start":2,"target":0,"type":"APPEARS_IN"}]});
 
   expect(result.json).toStrictEqual([{"path":[{"_id":1,"_labels":["Droid"],"name":"R2-D2"},{"_end":2,"_id":0,"_start":1,"_type":"SPEAKS_WITH"},{"_id":2,"_labels":["Person"],"name":"YODA"},{"_end":0,"_id":1,"_start":2,"_type":"APPEARS_IN"},{"_id":0,"_labels":["Movie"],"name":"Episode I: The Phantom Menace"}]}]);
+
+  expect(result.stats.rows).toBe(2);
+  expect(result.stats.containsUpdates).toBe(false);
   await cleanDatabase(database);
 });
 
