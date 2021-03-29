@@ -132,6 +132,7 @@ test("returns path", async () => {
 });
 
 afterAll(async (done) => {
+  // await cleanAllDatabases();
   await session.close();
   await neo4j_system_driver.close();
   done();

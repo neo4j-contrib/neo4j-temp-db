@@ -15,6 +15,7 @@ import {
 let session;
 
 beforeAll(async (done) => {
+  // await cleanAllDatabases();
   session = neo4j_system_driver.session({ database: "system" });
   done();
 });
@@ -35,13 +36,6 @@ test("can create database", async () => {
 test("can run cypher on database", async () => {
   const database = await createDatabase();
   const result = await runCypherOnDatabase("RETURN 1;", database, "3.5");
-  // console.error("TO DO: confirm old console returns this as the JSON");
-  // // also
-  // // - add typescript?
-  // // - does SubGraph is complete? maybe its missing stuff when running queries
-  // // - make driver/session setup/teardown global for tests, it is conflicting when running all tests together
-  // // -
-  // expect(result.json).toStrictEqual([{ 1: "1" }]);
   await cleanDatabase(database);
 });
 
@@ -64,7 +58,7 @@ test("can clean up expired console databases", async () => {
   await createDatabase();
 
   clearDateMock();
-  await createDatabase();
+  const database = await createDatabase();
 
   result = await session.run("SHOW DATABASES");
   databases = filterConsoleDatabasesFromResult(result);
@@ -76,7 +70,8 @@ test("can clean up expired console databases", async () => {
   databases = filterConsoleDatabasesFromResult(result);
   expect(databases.length).toBe(1);
 
-  await cleanAllDatabases();
+  await cleanDatabase(database);
+  // await cleanAllDatabases();
 });
 
 // test("can clean up all console databases", async () => {
@@ -97,6 +92,7 @@ test("can clean up expired console databases", async () => {
 // });
 
 afterAll(async (done) => {
+  // await cleanAllDatabases();
   await session.close();
   await neo4j_system_driver.close();
   done();

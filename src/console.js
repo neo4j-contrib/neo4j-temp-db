@@ -45,10 +45,26 @@ export async function createDatabase() {
 }
 
 async function deleteDatabaseUserAndRole(session, database) {
-  await session.run(`STOP DATABASE ${database};`);
-  await session.run(`DROP DATABASE ${database};`);
-  await session.run(`DROP USER ${database};`);
-  await session.run(`DROP ROLE ${database};`);
+  try {
+    await session.run(`STOP DATABASE ${database};`);
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    await session.run(`DROP DATABASE ${database};`);
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    await session.run(`DROP USER ${database};`);
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    await session.run(`DROP ROLE ${database};`);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function cleanDatabase(database) {
