@@ -75,6 +75,7 @@ function toJsonCompatible(value) {
     for (const segment of value.segments) {
       result = result.concat(toJsonCompatible(segment));
     }
+    result.push(toJsonCompatible(value.end));
     return result
   }
 
@@ -82,7 +83,6 @@ function toJsonCompatible(value) {
     let result = [];
     result.push(toJsonCompatible(value.start));
     result.push(toJsonCompatible(value.relationship));
-    result.push(toJsonCompatible(value.end));
     return result
   }
 

@@ -126,7 +126,7 @@ test("returns path", async () => {
 
   expect(result.json).toStrictEqual([{"path":[{"_id":1,"_labels":["Droid"],"name":"R2-D2"},{"_end":2,"_id":0,"_start":1,"_type":"SPEAKS_WITH"},{"_id":2,"_labels":["Person"],"name":"YODA"},{"_end":0,"_id":1,"_start":2,"_type":"APPEARS_IN"},{"_id":0,"_labels":["Movie"],"name":"Episode I: The Phantom Menace"}]}]);
 
-  expect(result.stats.rows).toBe(2);
+  expect(result.stats.rows).toBe(1);
   expect(result.stats.containsUpdates).toBe(false);
   await cleanDatabase(database);
 });
