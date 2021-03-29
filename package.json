@@ -2,7 +2,7 @@
   "name": "neo4j-temp-db",
   "version": "0.1.0",
   "description": "expose a temporary database to run cyphers",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "prettier": "prettier --write",
     "test": "jest --testTimeout=30000",
