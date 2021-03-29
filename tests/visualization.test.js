@@ -6,7 +6,7 @@ import {
   cleanAllDatabases,
   filterConsoleDatabasesFromResult,
   removeDatabasesOlderThan,
-} from "./console.js";
+} from "../src";
 import {
   advanceBy as advanceDateBy,
   clear as clearDateMock,
