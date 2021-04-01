@@ -68,12 +68,16 @@ export async function removeDatabasesOlderThan(seconds) {
   const shouldExpireAt = getCurrentTimestamp() - seconds;
   try {
     const records = filterConsoleDatabasesFromResult(result);
+    console.log("Databases found: " + records.length);
     for (const record of records) {
       const database = record.get("name");
       const dbTimestamp = parseInt(database.slice(39), 10);
       const isExpired = dbTimestamp <= shouldExpireAt;
       if (isExpired) {
+        console.log("Deleted expired database: " + database);
         await deleteDatabaseUserAndRole(session, database);
+      } else {
+        console.log("Not expired yet: " + database);
       }
     }
   } catch (error) {

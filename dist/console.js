@@ -230,14 +230,15 @@ function _removeDatabasesOlderThan() {
             shouldExpireAt = getCurrentTimestamp() - seconds;
             _context4.prev = 5;
             records = filterConsoleDatabasesFromResult(result);
+            console.log("Databases found: " + records.length);
             _iterator = _createForOfIteratorHelper(records);
-            _context4.prev = 8;
+            _context4.prev = 9;
 
             _iterator.s();
 
-          case 10:
+          case 11:
             if ((_step = _iterator.n()).done) {
-              _context4.next = 20;
+              _context4.next = 25;
               break;
             }
 
@@ -247,57 +248,65 @@ function _removeDatabasesOlderThan() {
             isExpired = dbTimestamp <= shouldExpireAt;
 
             if (!isExpired) {
-              _context4.next = 18;
+              _context4.next = 22;
               break;
             }
 
-            _context4.next = 18;
+            console.log("Deleted expired database: " + database);
+            _context4.next = 20;
             return deleteDatabaseUserAndRole(session, database);
 
-          case 18:
-            _context4.next = 10;
-            break;
-
           case 20:
-            _context4.next = 25;
+            _context4.next = 23;
             break;
 
           case 22:
-            _context4.prev = 22;
-            _context4.t0 = _context4["catch"](8);
+            console.log("Not expired yet: " + database);
+
+          case 23:
+            _context4.next = 11;
+            break;
+
+          case 25:
+            _context4.next = 30;
+            break;
+
+          case 27:
+            _context4.prev = 27;
+            _context4.t0 = _context4["catch"](9);
 
             _iterator.e(_context4.t0);
 
-          case 25:
-            _context4.prev = 25;
+          case 30:
+            _context4.prev = 30;
 
             _iterator.f();
 
-            return _context4.finish(25);
+            return _context4.finish(30);
 
-          case 28:
-            _context4.next = 33;
+          case 33:
+            _context4.next = 38;
             break;
 
-          case 30:
-            _context4.prev = 30;
+          case 35:
+            _context4.prev = 35;
             _context4.t1 = _context4["catch"](5);
             console.error(_context4.t1);
 
-          case 33:
-            _context4.prev = 33;
-            _context4.next = 36;
+          case 38:
+            _context4.prev = 38;
+            _context4.next = 41;
             return session.close();
 
-          case 36:
-            return _context4.finish(33);
+          case 41:
+            return _context4.finish(38);
 
-          case 37:
+          case 42:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[5, 30, 33, 37], [8, 22, 25, 28]]);
+    }, _callee4, null, [[5, 35, 38, 42], [9, 27, 30, 33]]);
   }));
   return _removeDatabasesOlderThan.apply(this, arguments);
 }
