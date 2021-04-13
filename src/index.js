@@ -1,10 +1,3 @@
-export {
-  neo4j_system_driver,
-  createDatabase,
-  deleteDatabaseUserAndRole,
-  cleanDatabase,
-  removeDatabasesOlderThan,
-  cleanAllDatabases,
-  runCypherOnDatabase,
-  filterConsoleDatabasesFromResult
-} from "./console.js";
+import Neo4jTempDB from "./console.js";
+
+export default Neo4jTempDB;

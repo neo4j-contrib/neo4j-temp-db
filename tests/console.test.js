@@ -1,26 +1,29 @@
-import {
-  neo4j_system_driver,
-  createDatabase,
-  cleanDatabase,
-  runCypherOnDatabase,
-  cleanAllDatabases,
-  filterConsoleDatabasesFromResult,
-  removeDatabasesOlderThan,
-} from "../src";
+import neo4j from "neo4j-driver";
+import Neo4jTempDB from "../src";
 import {
   advanceBy as advanceDateBy,
   clear as clearDateMock,
 } from "jest-date-mock";
 
+let neo4jSystemDriver;
 let session;
+let tempDb;
 
 beforeAll(async (done) => {
-  session = neo4j_system_driver.session({ database: "system" });
+  tempDb = new Neo4jTempDB(
+    process.env.CONSOLE_NEO4J_URI,
+    neo4j.auth.basic(
+      process.env.CONSOLE_NEO4J_USER,
+      process.env.CONSOLE_NEO4J_PASSWORD
+    )
+  );
+  neo4jSystemDriver = tempDb.getSystemDriver();
+  session = neo4jSystemDriver.session({ database: "system" });
   done();
 });
 
 test("can create database", async () => {
-  const database = await createDatabase();
+  const database = await tempDb.createDatabase();
 
   const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
@@ -29,28 +32,21 @@ test("can create database", async () => {
   expect(record.get("name")).toBe(database);
   expect(record.get("currentStatus")).toBe("online");
 
-  await cleanDatabase(database);
+  await tempDb.cleanDatabase(database);
 });
 
 test("can run cypher on database", async () => {
-  const database = await createDatabase();
-  const result = await runCypherOnDatabase("RETURN 1;", database, "3.5");
-  // console.error("TO DO: confirm old console returns this as the JSON");
-  // // also
-  // // - add typescript?
-  // // - does SubGraph is complete? maybe its missing stuff when running queries
-  // // - make driver/session setup/teardown global for tests, it is conflicting when running all tests together
-  // // -
-  // expect(result.json).toStrictEqual([{ 1: "1" }]);
-  await cleanDatabase(database);
+  const database = await tempDb.createDatabase();
+  const result = await tempDb.runCypherOnDatabase(database, "3.5", "RETURN 1;");
+  await tempDb.cleanDatabase(database);
 });
 
 test("can clean up database", async () => {
-  const database = await createDatabase();
+  const database = await tempDb.createDatabase();
   const result = await session.run("SHOW DATABASE $database", { database });
   expect(result.records.length).toBe(1);
 
-  await cleanDatabase(database);
+  await tempDb.cleanDatabase(database);
   const cleanResult = await session.run("SHOW DATABASE $database", {
     database,
   });
@@ -61,43 +57,43 @@ test("can clean up expired console databases", async () => {
   let result, databases;
 
   advanceDateBy(-1000 * 60 * 60 * 24); // 24h ago
-  await createDatabase();
+  await tempDb.createDatabase();
 
   clearDateMock();
-  await createDatabase();
+  await tempDb.createDatabase();
 
   result = await session.run("SHOW DATABASES");
-  databases = filterConsoleDatabasesFromResult(result);
+  databases = tempDb.filterConsoleDatabasesFromResult(result);
   expect(databases.length).toBe(2);
 
-  await removeDatabasesOlderThan(60 * 60 * 24); // 24h
+  await tempDb.cleanDatabasesOlderThan(60 * 60 * 24); // 24h
 
   result = await session.run("SHOW DATABASES");
-  databases = filterConsoleDatabasesFromResult(result);
+  databases = tempDb.filterConsoleDatabasesFromResult(result);
   expect(databases.length).toBe(1);
 
-  await cleanAllDatabases();
+  await tempDb.cleanAllDatabases();
 });
 
 // test("can clean up all console databases", async () => {
 //   let result, databases;
 
-//   await createDatabase();
-//   await createDatabase();
+//   await tempDb.createDatabase();
+//   await tempDb.createDatabase();
 
 //   result = await session.run("SHOW DATABASES");
-//   databases = filterConsoleDatabasesFromResult(result);
+//   databases = tempDb.filterConsoleDatabasesFromResult(result);
 //   expect(databases.length).toBe(2);
 
-//   await cleanAllDatabases();
+//   await tempDb.cleanAllDatabases();
 
 //   result = await session.run("SHOW DATABASES");
-//   databases = filterConsoleDatabasesFromResult(result);
+//   databases = tempDb.filterConsoleDatabasesFromResult(result);
 //   expect(databases.length).toBe(0);
 // });
 
 afterAll(async (done) => {
   await session.close();
-  await neo4j_system_driver.close();
+  await neo4jSystemDriver.close();
   done();
 });
