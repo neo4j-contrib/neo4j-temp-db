@@ -3,13 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createDatabase = createDatabase;
-exports.cleanDatabase = cleanDatabase;
-exports.removeDatabasesOlderThan = removeDatabasesOlderThan;
-exports.cleanAllDatabases = cleanAllDatabases;
-exports.runCypherOnDatabase = runCypherOnDatabase;
-exports.filterConsoleDatabasesFromResult = filterConsoleDatabasesFromResult;
-exports.neo4j_system_driver = void 0;
+exports["default"] = void 0;
 
 var _neo4jDriver = _interopRequireDefault(require("neo4j-driver"));
 
@@ -35,461 +29,523 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var neo4j_system_driver = _neo4jDriver["default"].driver(process.env.CONSOLE_NEO4J_URI, _neo4jDriver["default"].auth.basic(process.env.CONSOLE_NEO4J_USER, process.env.CONSOLE_NEO4J_PASSWORD));
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-exports.neo4j_system_driver = neo4j_system_driver;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function getCurrentTimestamp() {
   return Math.floor(new Date().getTime() / 1000);
 }
 
-function createDatabase() {
-  return _createDatabase.apply(this, arguments);
-}
+var Neo4jTempDB = /*#__PURE__*/function () {
+  function Neo4jTempDB(url, authToken, config) {
+    _classCallCheck(this, Neo4jTempDB);
 
-function _createDatabase() {
-  _createDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var sessionId, currentTimestamp, database, session;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            sessionId = (0, _uuid.v4)().replace(/-/g, "");
-            currentTimestamp = getCurrentTimestamp();
-            database = "console".concat(sessionId).concat(currentTimestamp);
-            session = neo4j_system_driver.session({
-              database: "system",
-              defaultAccessMode: _neo4jDriver["default"].session.WRITE
-            });
-            _context.prev = 4;
-            _context.next = 7;
-            return session.run("CREATE DATABASE ".concat(database, " WAIT;"));
+    this.databaseUrl = url;
+    this.databaseAuthToken = authToken;
+    this.databaseConfig = config;
+  }
 
-          case 7:
-            _context.next = 9;
-            return session.run("CREATE USER ".concat(database, " SET PASSWORD '").concat(database, "' SET PASSWORD CHANGE NOT REQUIRED;"));
+  _createClass(Neo4jTempDB, [{
+    key: "getSystemDriver",
+    value: function getSystemDriver() {
+      return _neo4jDriver["default"].driver(this.databaseUrl, this.databaseAuthToken, this.databaseConfig);
+    } // export async function createTempDb(url: string, authToken: Map<string, string>, config: Object) {
 
-          case 9:
-            _context.next = 11;
-            return session.run("CREATE ROLE ".concat(database, ";"));
+  }, {
+    key: "createDatabase",
+    value: function () {
+      var _createDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var sessionId, currentTimestamp, database, neo4jSystemDriver, session;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                sessionId = (0, _uuid.v4)().replace(/-/g, "");
+                currentTimestamp = getCurrentTimestamp();
+                database = "console".concat(sessionId).concat(currentTimestamp);
+                neo4jSystemDriver = this.getSystemDriver();
+                session = neo4jSystemDriver.session({
+                  database: "system",
+                  defaultAccessMode: _neo4jDriver["default"].session.WRITE
+                });
+                _context.prev = 5;
+                _context.next = 8;
+                return session.run("CREATE DATABASE ".concat(database, " WAIT;"));
 
-          case 11:
-            _context.next = 13;
-            return session.run("GRANT ROLE ".concat(database, " TO ").concat(database, ";"));
+              case 8:
+                _context.next = 10;
+                return session.run("CREATE USER ".concat(database, " SET PASSWORD '").concat(database, "' SET PASSWORD CHANGE NOT REQUIRED;"));
 
-          case 13:
-            _context.next = 15;
-            return session.run("GRANT ALL ON DATABASE ".concat(database, " TO ").concat(database, ";"));
+              case 10:
+                _context.next = 12;
+                return session.run("CREATE ROLE ".concat(database, ";"));
 
-          case 15:
-            _context.next = 17;
-            return session.run("GRANT ACCESS ON DATABASE ".concat(database, " TO ").concat(database, ";"));
+              case 12:
+                _context.next = 14;
+                return session.run("GRANT ROLE ".concat(database, " TO ").concat(database, ";"));
 
-          case 17:
-            _context.next = 19;
-            return session.run("GRANT READ {*} ON GRAPH ".concat(database, " TO ").concat(database, ";"));
+              case 14:
+                _context.next = 16;
+                return session.run("GRANT ALL ON DATABASE ".concat(database, " TO ").concat(database, ";"));
 
-          case 19:
-            _context.next = 21;
-            return session.run("GRANT TRAVERSE ON GRAPH ".concat(database, " TO ").concat(database, ";"));
+              case 16:
+                _context.next = 18;
+                return session.run("GRANT ACCESS ON DATABASE ".concat(database, " TO ").concat(database, ";"));
 
-          case 21:
-            _context.next = 23;
-            return session.run("GRANT WRITE ON GRAPH ".concat(database, " TO ").concat(database, ";"));
+              case 18:
+                _context.next = 20;
+                return session.run("GRANT READ {*} ON GRAPH ".concat(database, " TO ").concat(database, ";"));
 
-          case 23:
-            _context.next = 28;
-            break;
+              case 20:
+                _context.next = 22;
+                return session.run("GRANT TRAVERSE ON GRAPH ".concat(database, " TO ").concat(database, ";"));
 
-          case 25:
-            _context.prev = 25;
-            _context.t0 = _context["catch"](4);
-            console.error(_context.t0);
+              case 22:
+                _context.next = 24;
+                return session.run("GRANT WRITE ON GRAPH ".concat(database, " TO ").concat(database, ";"));
 
-          case 28:
-            _context.prev = 28;
-            _context.next = 31;
-            return session.close();
+              case 24:
+                _context.next = 29;
+                break;
 
-          case 31:
-            return _context.finish(28);
+              case 26:
+                _context.prev = 26;
+                _context.t0 = _context["catch"](5);
+                console.error(_context.t0);
 
-          case 32:
-            return _context.abrupt("return", database);
+              case 29:
+                _context.prev = 29;
+                _context.next = 32;
+                return session.close();
 
-          case 33:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, null, [[4, 25, 28, 32]]);
-  }));
-  return _createDatabase.apply(this, arguments);
-}
+              case 32:
+                _context.next = 34;
+                return neo4jSystemDriver.close();
 
-function deleteDatabaseUserAndRole(_x, _x2) {
-  return _deleteDatabaseUserAndRole.apply(this, arguments);
-}
+              case 34:
+                return _context.finish(29);
 
-function _deleteDatabaseUserAndRole() {
-  _deleteDatabaseUserAndRole = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(session, database) {
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return session.run("STOP DATABASE ".concat(database, ";"));
+              case 35:
+                return _context.abrupt("return", database);
 
-          case 2:
-            _context2.next = 4;
-            return session.run("DROP DATABASE ".concat(database, ";"));
-
-          case 4:
-            _context2.next = 6;
-            return session.run("DROP USER ".concat(database, ";"));
-
-          case 6:
-            _context2.next = 8;
-            return session.run("DROP ROLE ".concat(database, ";"));
-
-          case 8:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2);
-  }));
-  return _deleteDatabaseUserAndRole.apply(this, arguments);
-}
-
-function cleanDatabase(_x3) {
-  return _cleanDatabase.apply(this, arguments);
-}
-
-function _cleanDatabase() {
-  _cleanDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(database) {
-    var session;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            session = neo4j_system_driver.session({
-              database: "system"
-            });
-            _context3.prev = 1;
-            _context3.next = 4;
-            return deleteDatabaseUserAndRole(session, database);
-
-          case 4:
-            _context3.next = 9;
-            break;
-
-          case 6:
-            _context3.prev = 6;
-            _context3.t0 = _context3["catch"](1);
-            console.error(_context3.t0);
-
-          case 9:
-            _context3.prev = 9;
-            _context3.next = 12;
-            return session.close();
-
-          case 12:
-            return _context3.finish(9);
-
-          case 13:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3, null, [[1, 6, 9, 13]]);
-  }));
-  return _cleanDatabase.apply(this, arguments);
-}
-
-function removeDatabasesOlderThan(_x4) {
-  return _removeDatabasesOlderThan.apply(this, arguments);
-}
-
-function _removeDatabasesOlderThan() {
-  _removeDatabasesOlderThan = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(seconds) {
-    var session, result, shouldExpireAt, records, _iterator, _step, record, database, dbTimestamp, isExpired;
-
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            session = neo4j_system_driver.session({
-              database: "system"
-            });
-            _context4.next = 3;
-            return session.run("SHOW DATABASES");
-
-          case 3:
-            result = _context4.sent;
-            shouldExpireAt = getCurrentTimestamp() - seconds;
-            _context4.prev = 5;
-            records = filterConsoleDatabasesFromResult(result);
-            console.log("Databases found: " + records.length);
-            _iterator = _createForOfIteratorHelper(records);
-            _context4.prev = 9;
-
-            _iterator.s();
-
-          case 11:
-            if ((_step = _iterator.n()).done) {
-              _context4.next = 25;
-              break;
+              case 36:
+              case "end":
+                return _context.stop();
             }
+          }
+        }, _callee, this, [[5, 26, 29, 35]]);
+      }));
 
-            record = _step.value;
-            database = record.get("name");
-            dbTimestamp = parseInt(database.slice(39), 10);
-            isExpired = dbTimestamp <= shouldExpireAt;
+      function createDatabase() {
+        return _createDatabase.apply(this, arguments);
+      }
 
-            if (!isExpired) {
-              _context4.next = 22;
-              break;
+      return createDatabase;
+    }()
+  }, {
+    key: "deleteDatabaseUserAndRole",
+    value: function () {
+      var _deleteDatabaseUserAndRole = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(session, database) {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return session.run("STOP DATABASE ".concat(database, ";"));
+
+              case 2:
+                _context2.next = 4;
+                return session.run("DROP DATABASE ".concat(database, ";"));
+
+              case 4:
+                _context2.next = 6;
+                return session.run("DROP USER ".concat(database, ";"));
+
+              case 6:
+                _context2.next = 8;
+                return session.run("DROP ROLE ".concat(database, ";"));
+
+              case 8:
+              case "end":
+                return _context2.stop();
             }
+          }
+        }, _callee2);
+      }));
 
-            console.log("Deleted expired database: " + database);
-            _context4.next = 20;
-            return deleteDatabaseUserAndRole(session, database);
-
-          case 20:
-            _context4.next = 23;
-            break;
-
-          case 22:
-            console.log("Not expired yet: " + database);
-
-          case 23:
-            _context4.next = 11;
-            break;
-
-          case 25:
-            _context4.next = 30;
-            break;
-
-          case 27:
-            _context4.prev = 27;
-            _context4.t0 = _context4["catch"](9);
-
-            _iterator.e(_context4.t0);
-
-          case 30:
-            _context4.prev = 30;
-
-            _iterator.f();
-
-            return _context4.finish(30);
-
-          case 33:
-            _context4.next = 38;
-            break;
-
-          case 35:
-            _context4.prev = 35;
-            _context4.t1 = _context4["catch"](5);
-            console.error(_context4.t1);
-
-          case 38:
-            _context4.prev = 38;
-            _context4.next = 41;
-            return session.close();
-
-          case 41:
-            return _context4.finish(38);
-
-          case 42:
-          case "end":
-            return _context4.stop();
-        }
+      function deleteDatabaseUserAndRole(_x, _x2) {
+        return _deleteDatabaseUserAndRole.apply(this, arguments);
       }
-    }, _callee4, null, [[5, 35, 38, 42], [9, 27, 30, 33]]);
-  }));
-  return _removeDatabasesOlderThan.apply(this, arguments);
-}
 
-function cleanAllDatabases() {
-  return _cleanAllDatabases.apply(this, arguments);
-}
+      return deleteDatabaseUserAndRole;
+    }()
+  }, {
+    key: "cleanDatabase",
+    value: function () {
+      var _cleanDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(database) {
+        var neo4jSystemDriver, session;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                neo4jSystemDriver = this.getSystemDriver();
+                session = neo4jSystemDriver.session({
+                  database: "system"
+                });
+                _context3.prev = 2;
+                _context3.next = 5;
+                return this.deleteDatabaseUserAndRole(session, database);
 
-function _cleanAllDatabases() {
-  _cleanAllDatabases = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-    var session, result, records, _iterator2, _step2, record, database;
+              case 5:
+                _context3.next = 10;
+                break;
 
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            session = neo4j_system_driver.session({
-              database: "system"
-            });
-            _context5.next = 3;
-            return session.run("SHOW DATABASES");
+              case 7:
+                _context3.prev = 7;
+                _context3.t0 = _context3["catch"](2);
+                console.error(_context3.t0);
 
-          case 3:
-            result = _context5.sent;
-            _context5.prev = 4;
-            records = filterConsoleDatabasesFromResult(result);
-            _iterator2 = _createForOfIteratorHelper(records);
-            _context5.prev = 7;
+              case 10:
+                _context3.prev = 10;
+                _context3.next = 13;
+                return session.close();
 
-            _iterator2.s();
+              case 13:
+                _context3.next = 15;
+                return neo4jSystemDriver.close();
 
-          case 9:
-            if ((_step2 = _iterator2.n()).done) {
-              _context5.next = 16;
-              break;
+              case 15:
+                return _context3.finish(10);
+
+              case 16:
+              case "end":
+                return _context3.stop();
             }
+          }
+        }, _callee3, this, [[2, 7, 10, 16]]);
+      }));
 
-            record = _step2.value;
-            database = record.get("name");
-            _context5.next = 14;
-            return deleteDatabaseUserAndRole(session, database);
-
-          case 14:
-            _context5.next = 9;
-            break;
-
-          case 16:
-            _context5.next = 21;
-            break;
-
-          case 18:
-            _context5.prev = 18;
-            _context5.t0 = _context5["catch"](7);
-
-            _iterator2.e(_context5.t0);
-
-          case 21:
-            _context5.prev = 21;
-
-            _iterator2.f();
-
-            return _context5.finish(21);
-
-          case 24:
-            _context5.next = 29;
-            break;
-
-          case 26:
-            _context5.prev = 26;
-            _context5.t1 = _context5["catch"](4);
-            console.error(_context5.t1);
-
-          case 29:
-            _context5.prev = 29;
-            _context5.next = 32;
-            return session.close();
-
-          case 32:
-            return _context5.finish(29);
-
-          case 33:
-          case "end":
-            return _context5.stop();
-        }
+      function cleanDatabase(_x3) {
+        return _cleanDatabase.apply(this, arguments);
       }
-    }, _callee5, null, [[4, 26, 29, 33], [7, 18, 21, 24]]);
-  }));
-  return _cleanAllDatabases.apply(this, arguments);
-}
 
-function runCypherOnDatabase(_x5, _x6, _x7, _x8) {
-  return _runCypherOnDatabase.apply(this, arguments);
-}
+      return cleanDatabase;
+    }()
+  }, {
+    key: "cleanDatabasesOlderThan",
+    value: function () {
+      var _cleanDatabasesOlderThan = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(seconds) {
+        var neo4jSystemDriver, session, result, shouldExpireAt, records, _iterator, _step, record, database, dbTimestamp, isExpired;
 
-function _runCypherOnDatabase() {
-  _runCypherOnDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(cypher, database, version, params) {
-    var session_driver, session, startTime, query, run, result, keys, summary, records, endTime, runTime, stats, plan, r;
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-            session_driver = _neo4jDriver["default"].driver(process.env.CONSOLE_NEO4J_URI, _neo4jDriver["default"].auth.basic(database, database));
-            session = session_driver.session({
-              database: database,
-              defaultAccessMode: _neo4jDriver["default"].session.WRITE
-            });
-            _context6.prev = 2;
-            startTime = new Date().getTime();
-            query = "CYPHER ".concat(version, " ").concat(cypher);
-            run = session.run(query, _objectSpread({}, params));
-            _context6.next = 8;
-            return run;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                neo4jSystemDriver = this.getSystemDriver();
+                session = neo4jSystemDriver.session({
+                  database: "system"
+                });
+                _context4.next = 4;
+                return session.run("SHOW DATABASES");
 
-          case 8:
-            result = _context6.sent;
-            _context6.next = 11;
-            return run.keys();
+              case 4:
+                result = _context4.sent;
+                shouldExpireAt = getCurrentTimestamp() - seconds;
+                _context4.prev = 6;
+                records = this.filterConsoleDatabasesFromResult(result);
+                console.log("Databases found: " + records.length);
+                _iterator = _createForOfIteratorHelper(records);
+                _context4.prev = 10;
 
-          case 11:
-            keys = _context6.sent;
-            summary = result.summary;
-            records = result.records;
-            endTime = new Date().getTime();
-            runTime = endTime - startTime;
-            stats = summary.counters;
-            plan = null;
-            r = new _CypherResult["default"](keys, records, stats, runTime, plan, query, session);
-            _context6.t0 = cypher;
-            _context6.next = 22;
-            return r.cypherQueryViz(r);
+                _iterator.s();
 
-          case 22:
-            _context6.t1 = _context6.sent;
-            _context6.t2 = version;
-            _context6.t3 = keys;
-            _context6.t4 = r.createJson();
-            _context6.t5 = plan;
-            _context6.t6 = _objectSpread(_objectSpread({}, stats._stats), {}, {
-              rows: records.length,
-              time: runTime,
-              // text: stats.toString(),
-              containsUpdates: stats.containsUpdates()
-            });
-            return _context6.abrupt("return", {
-              query: _context6.t0,
-              visualization: _context6.t1,
-              version: _context6.t2,
-              init: null,
-              columns: _context6.t3,
-              json: _context6.t4,
-              plan: _context6.t5,
-              stats: _context6.t6
-            });
+              case 12:
+                if ((_step = _iterator.n()).done) {
+                  _context4.next = 26;
+                  break;
+                }
 
-          case 31:
-            _context6.prev = 31;
-            _context6.t7 = _context6["catch"](2);
-            console.error(_context6.t7);
+                record = _step.value;
+                database = record.get("name");
+                dbTimestamp = parseInt(database.slice(39), 10);
+                isExpired = dbTimestamp <= shouldExpireAt;
 
-          case 34:
-            _context6.prev = 34;
-            _context6.next = 37;
-            return session.close();
+                if (!isExpired) {
+                  _context4.next = 23;
+                  break;
+                }
 
-          case 37:
-            _context6.next = 39;
-            return session_driver.close();
+                console.log("Deleted expired database: " + database);
+                _context4.next = 21;
+                return this.deleteDatabaseUserAndRole(session, database);
 
-          case 39:
-            return _context6.finish(34);
+              case 21:
+                _context4.next = 24;
+                break;
 
-          case 40:
-          case "end":
-            return _context6.stop();
-        }
+              case 23:
+                console.log("Not expired yet: " + database);
+
+              case 24:
+                _context4.next = 12;
+                break;
+
+              case 26:
+                _context4.next = 31;
+                break;
+
+              case 28:
+                _context4.prev = 28;
+                _context4.t0 = _context4["catch"](10);
+
+                _iterator.e(_context4.t0);
+
+              case 31:
+                _context4.prev = 31;
+
+                _iterator.f();
+
+                return _context4.finish(31);
+
+              case 34:
+                _context4.next = 39;
+                break;
+
+              case 36:
+                _context4.prev = 36;
+                _context4.t1 = _context4["catch"](6);
+                console.error(_context4.t1);
+
+              case 39:
+                _context4.prev = 39;
+                _context4.next = 42;
+                return session.close();
+
+              case 42:
+                _context4.next = 44;
+                return neo4jSystemDriver.close();
+
+              case 44:
+                return _context4.finish(39);
+
+              case 45:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this, [[6, 36, 39, 45], [10, 28, 31, 34]]);
+      }));
+
+      function cleanDatabasesOlderThan(_x4) {
+        return _cleanDatabasesOlderThan.apply(this, arguments);
       }
-    }, _callee6, null, [[2, 31, 34, 40]]);
-  }));
-  return _runCypherOnDatabase.apply(this, arguments);
-}
 
-function filterConsoleDatabasesFromResult(result) {
-  return result.records.filter(function (record) {
-    return record.get("name").indexOf("console") === 0;
-  });
-}
+      return cleanDatabasesOlderThan;
+    }()
+  }, {
+    key: "cleanAllDatabases",
+    value: function () {
+      var _cleanAllDatabases = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+        var neo4jSystemDriver, session, result, records, _iterator2, _step2, record, database;
+
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                neo4jSystemDriver = this.getSystemDriver();
+                session = neo4jSystemDriver.session({
+                  database: "system"
+                });
+                _context5.next = 4;
+                return session.run("SHOW DATABASES");
+
+              case 4:
+                result = _context5.sent;
+                _context5.prev = 5;
+                records = this.filterConsoleDatabasesFromResult(result);
+                _iterator2 = _createForOfIteratorHelper(records);
+                _context5.prev = 8;
+
+                _iterator2.s();
+
+              case 10:
+                if ((_step2 = _iterator2.n()).done) {
+                  _context5.next = 17;
+                  break;
+                }
+
+                record = _step2.value;
+                database = record.get("name");
+                _context5.next = 15;
+                return this.deleteDatabaseUserAndRole(session, database);
+
+              case 15:
+                _context5.next = 10;
+                break;
+
+              case 17:
+                _context5.next = 22;
+                break;
+
+              case 19:
+                _context5.prev = 19;
+                _context5.t0 = _context5["catch"](8);
+
+                _iterator2.e(_context5.t0);
+
+              case 22:
+                _context5.prev = 22;
+
+                _iterator2.f();
+
+                return _context5.finish(22);
+
+              case 25:
+                _context5.next = 30;
+                break;
+
+              case 27:
+                _context5.prev = 27;
+                _context5.t1 = _context5["catch"](5);
+                console.error(_context5.t1);
+
+              case 30:
+                _context5.prev = 30;
+                _context5.next = 33;
+                return session.close();
+
+              case 33:
+                _context5.next = 35;
+                return neo4jSystemDriver.close();
+
+              case 35:
+                return _context5.finish(30);
+
+              case 36:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this, [[5, 27, 30, 36], [8, 19, 22, 25]]);
+      }));
+
+      function cleanAllDatabases() {
+        return _cleanAllDatabases.apply(this, arguments);
+      }
+
+      return cleanAllDatabases;
+    }()
+  }, {
+    key: "runCypherOnDatabase",
+    value: function () {
+      var _runCypherOnDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(database, version, cypher, params) {
+        var allowedVersions, cypherVersion, sessionDriver, session, startTime, query, run, result, keys, summary, records, endTime, runTime, stats, plan, r;
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                allowedVersions = ["3.5", "4.1", "4.2"];
+                cypherVersion = version || "3.5";
+
+                if (allowedVersions.indexOf(cypherVersion) < 0) {
+                  cypherVersion = allowedVersions[0];
+                }
+
+                sessionDriver = _neo4jDriver["default"].driver(this.databaseUrl, _neo4jDriver["default"].auth.basic(database, database), this.databaseConfig);
+                session = sessionDriver.session({
+                  database: database,
+                  defaultAccessMode: _neo4jDriver["default"].session.WRITE
+                });
+                _context6.prev = 5;
+                startTime = new Date().getTime();
+                query = "CYPHER ".concat(version, " ").concat(cypher);
+                run = session.run(query, _objectSpread({}, params));
+                _context6.next = 11;
+                return run;
+
+              case 11:
+                result = _context6.sent;
+                _context6.next = 14;
+                return run.keys();
+
+              case 14:
+                keys = _context6.sent;
+                summary = result.summary;
+                records = result.records;
+                endTime = new Date().getTime();
+                runTime = endTime - startTime;
+                stats = summary.counters;
+                plan = null;
+                r = new _CypherResult["default"](keys, records, stats, runTime, plan, query, session);
+                _context6.t0 = cypher;
+                _context6.next = 25;
+                return r.cypherQueryViz(r);
+
+              case 25:
+                _context6.t1 = _context6.sent;
+                _context6.t2 = version;
+                _context6.t3 = keys;
+                _context6.t4 = r.createJson();
+                _context6.t5 = plan;
+                _context6.t6 = _objectSpread(_objectSpread({}, stats._stats), {}, {
+                  rows: records.length,
+                  time: runTime,
+                  containsUpdates: stats.containsUpdates()
+                });
+                return _context6.abrupt("return", {
+                  query: _context6.t0,
+                  visualization: _context6.t1,
+                  version: _context6.t2,
+                  columns: _context6.t3,
+                  json: _context6.t4,
+                  plan: _context6.t5,
+                  stats: _context6.t6
+                });
+
+              case 34:
+                _context6.prev = 34;
+                _context6.t7 = _context6["catch"](5);
+                console.error(_context6.t7);
+
+              case 37:
+                _context6.prev = 37;
+                _context6.next = 40;
+                return session.close();
+
+              case 40:
+                _context6.next = 42;
+                return sessionDriver.close();
+
+              case 42:
+                return _context6.finish(37);
+
+              case 43:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this, [[5, 34, 37, 43]]);
+      }));
+
+      function runCypherOnDatabase(_x5, _x6, _x7, _x8) {
+        return _runCypherOnDatabase.apply(this, arguments);
+      }
+
+      return runCypherOnDatabase;
+    }()
+  }, {
+    key: "filterConsoleDatabasesFromResult",
+    value: function filterConsoleDatabasesFromResult(result) {
+      return result.records.filter(function (record) {
+        return record.get("name").indexOf("console") === 0;
+      });
+    }
+  }]);
+
+  return Neo4jTempDB;
+}();
+
+exports["default"] = Neo4jTempDB;
