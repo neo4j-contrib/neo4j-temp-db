@@ -1,13 +1,13 @@
 # neo4j-temp-db
 
-This library was created initialy to be used on https://portal.graphgist.org/ where you are able to run custom cypher queries directly on the browser, you can change queries and interact with the results.
+This library was created initialy to be used on https://portal.graphgist.org/ where users are able to run custom cypher queries directly on the browser, can change queries, and interact with the results.
 
-With this we are able to easily implement this within your project too.
+This implementation may work with your project too.
 
-Under the hood it creates a temporary database on a Neo4j instance (v4.0 or higher), the database contains a timestamp on its name so we can use that to cleanup older databases.
+Under the hood it creates a temporary database on a Neo4j instance (v4.0 or higher).
+To prevent the running out of memory on the database, each temporary database is named with a timestamp to be used in a cleanup operation. 
 
 ## How to use:
-
 
 ```javascript
 import neo4j from "neo4j-driver"
@@ -43,17 +43,15 @@ version | the cypher version selected
 
 ### Clean up the database
 
-This is important to free resources on your server since databases don't auto expire, this has to be done manually:
-
+This is important to free resources on your server since databases don't auto expire:
 
 ```javascript
 await tempDb.cleanDatabase(database)
 ```
-
 ### Clean up databases expired databases 
 
 ```javascript
-await tempDb.cleanDatabasesOlderThan(60 * 60 * 24) // 24h
+await tempDb.cleanDatabasesOlderThan(60 * 60 * 24) // 24h cleanup interval
 ```
 
 ### Clean up all databases
