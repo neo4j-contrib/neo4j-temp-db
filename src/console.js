@@ -10,7 +10,11 @@ export default class Neo4jTempDB {
   constructor(url, authToken, config) {
     this.databaseUrl = url;
     this.databaseAuthToken = authToken;
-    this.databaseConfig = config;
+    this.databaseConfig = {
+      ...config,
+      maxConnectionPoolSize: 2,
+      maxConnectionLifetime: 20 * 60 * 1000, // 2 minutes
+    };
   }
 
   getSystemDriver() {
