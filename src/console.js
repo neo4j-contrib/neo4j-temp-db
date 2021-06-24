@@ -10,7 +10,11 @@ export default class Neo4jTempDB {
   constructor(url, authToken, config) {
     this.databaseUrl = url;
     this.databaseAuthToken = authToken;
-    this.databaseConfig = config;
+    this.databaseConfig = {
+      ...config,
+      maxConnectionPoolSize: 2,
+      maxConnectionLifetime: 20 * 60 * 1000, // 2 minutes
+    };
   }
 
   getSystemDriver() {
@@ -57,10 +61,26 @@ export default class Neo4jTempDB {
   }
 
   async deleteDatabaseUserAndRole(session, database) {
-    await session.run(`STOP DATABASE ${database};`);
-    await session.run(`DROP DATABASE ${database};`);
-    await session.run(`DROP USER ${database};`);
-    await session.run(`DROP ROLE ${database};`);
+    try {
+      await session.run(`STOP DATABASE ${database};`);
+    } catch (error) {
+      console.error(error);
+    }
+    try {
+      await session.run(`DROP DATABASE ${database};`);
+    } catch (error) {
+      console.error(error);
+    }
+    try {
+      await session.run(`DROP USER ${database};`);
+    } catch (error) {
+      console.error(error);
+    }
+    try {
+      await session.run(`DROP ROLE ${database};`);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async cleanDatabase(database) {
