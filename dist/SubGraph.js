@@ -1,25 +1,29 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
 
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
 var _lodash = _interopRequireDefault(require("lodash"));
 
-var _graphTypes = require("neo4j-driver/lib/graph-types.js");
+var _neo4jDriverCore = require("neo4j-driver-core");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -27,36 +31,23 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 var SubGraph = /*#__PURE__*/function () {
   function SubGraph() {
-    _classCallCheck(this, SubGraph);
-
+    (0, _classCallCheck2["default"])(this, SubGraph);
     this.nodes = new Map();
     this.relationships = new Map();
   }
 
-  _createClass(SubGraph, [{
+  (0, _createClass2["default"])(SubGraph, [{
     key: "fromSession",
     value: function () {
-      var _fromSession = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(session) {
+      var _fromSession = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(session) {
         var _this = this;
 
         var result;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -94,9 +85,9 @@ var SubGraph = /*#__PURE__*/function () {
   }, {
     key: "add",
     value: function add(record) {
-      if ((0, _graphTypes.isNode)(record)) {
+      if ((0, _neo4jDriverCore.isNode)(record)) {
         this.nodes.set(record.identity.toInt(), record);
-      } else if ((0, _graphTypes.isRelationship)(record)) {
+      } else if ((0, _neo4jDriverCore.isRelationship)(record)) {
         this.relationships.set(record.identity.toInt(), record);
       }
     }
@@ -167,7 +158,7 @@ var SubGraph = /*#__PURE__*/function () {
   }, {
     key: "markEntry",
     value: function markEntry(entry) {
-      var _entry = _slicedToArray(entry, 2),
+      var _entry = (0, _slicedToArray2["default"])(entry, 2),
           column = _entry[0],
           value = _entry[1];
 
@@ -185,7 +176,7 @@ var SubGraph = /*#__PURE__*/function () {
         } finally {
           _iterator3.f();
         }
-      } else if ((0, _graphTypes.isPath)(value)) {
+      } else if ((0, _neo4jDriverCore.isPath)(value)) {
         var _iterator4 = _createForOfIteratorHelper(value.segments),
             _step4;
 
@@ -199,7 +190,7 @@ var SubGraph = /*#__PURE__*/function () {
         } finally {
           _iterator4.f();
         }
-      } else if ((0, _graphTypes.isPathSegment)(value)) {
+      } else if ((0, _neo4jDriverCore.isPathSegment)(value)) {
         this.markNodeOrRel(column, value.start);
         this.markNodeOrRel(column, value.relationship);
         this.markNodeOrRel(column, value.end);
@@ -210,14 +201,14 @@ var SubGraph = /*#__PURE__*/function () {
   }, {
     key: "markNodeOrRel",
     value: function markNodeOrRel(column, value) {
-      if ((0, _graphTypes.isNode)(value) && this.nodes.has(value.identity.toInt())) {
+      if ((0, _neo4jDriverCore.isNode)(value) && this.nodes.has(value.identity.toInt())) {
         var id = value.identity.toInt();
         var item = this.nodes.get(id);
         item.properties.selected = column;
         this.nodes.set(id, item);
       }
 
-      if ((0, _graphTypes.isRelationship)(value) && this.relationships.has(value.identity.toInt())) {
+      if ((0, _neo4jDriverCore.isRelationship)(value) && this.relationships.has(value.identity.toInt())) {
         var _id = value.identity.toInt();
 
         var _item = this.relationships.get(_id);
@@ -227,7 +218,6 @@ var SubGraph = /*#__PURE__*/function () {
       }
     }
   }]);
-
   return SubGraph;
 }();
 

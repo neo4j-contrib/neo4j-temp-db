@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { isRelationship, isNode, isPath, isPathSegment } from "neo4j-driver/lib/graph-types.js";
+import { isRelationship, isNode, isPath, isPathSegment } from "neo4j-driver-core";
 
 export default class SubGraph {
   constructor() {
