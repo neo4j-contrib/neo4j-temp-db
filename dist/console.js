@@ -1,9 +1,21 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var _neo4jDriver = _interopRequireDefault(require("neo4j-driver"));
 
@@ -11,29 +23,15 @@ var _uuid = require("uuid");
 
 var _CypherResult = _interopRequireDefault(require("./CypherResult.js"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function getCurrentTimestamp() {
   return Math.floor(new Date().getTime() / 1000);
@@ -41,8 +39,7 @@ function getCurrentTimestamp() {
 
 var Neo4jTempDB = /*#__PURE__*/function () {
   function Neo4jTempDB(url, authToken, config) {
-    _classCallCheck(this, Neo4jTempDB);
-
+    (0, _classCallCheck2["default"])(this, Neo4jTempDB);
     this.databaseUrl = url;
     this.databaseAuthToken = authToken;
     this.databaseConfig = _objectSpread(_objectSpread({}, config), {}, {
@@ -52,7 +49,7 @@ var Neo4jTempDB = /*#__PURE__*/function () {
     });
   }
 
-  _createClass(Neo4jTempDB, [{
+  (0, _createClass2["default"])(Neo4jTempDB, [{
     key: "getSystemDriver",
     value: function getSystemDriver() {
       return _neo4jDriver["default"].driver(this.databaseUrl, this.databaseAuthToken, this.databaseConfig);
@@ -61,9 +58,9 @@ var Neo4jTempDB = /*#__PURE__*/function () {
   }, {
     key: "createDatabase",
     value: function () {
-      var _createDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var _createDatabase = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
         var sessionId, currentTimestamp, database, neo4jSystemDriver, session;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -152,8 +149,8 @@ var Neo4jTempDB = /*#__PURE__*/function () {
   }, {
     key: "deleteDatabaseUserAndRole",
     value: function () {
-      var _deleteDatabaseUserAndRole = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(session, database) {
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      var _deleteDatabaseUserAndRole = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(session, database) {
+        return _regenerator["default"].wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -229,9 +226,9 @@ var Neo4jTempDB = /*#__PURE__*/function () {
   }, {
     key: "cleanDatabase",
     value: function () {
-      var _cleanDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(database) {
+      var _cleanDatabase = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(database) {
         var neo4jSystemDriver, session;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regenerator["default"].wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -281,10 +278,10 @@ var Neo4jTempDB = /*#__PURE__*/function () {
   }, {
     key: "cleanDatabasesOlderThan",
     value: function () {
-      var _cleanDatabasesOlderThan = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(seconds) {
+      var _cleanDatabasesOlderThan = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(seconds) {
         var neo4jSystemDriver, session, result, shouldExpireAt, records, _iterator, _step, record, database, dbTimestamp, isExpired;
 
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return _regenerator["default"].wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -392,10 +389,10 @@ var Neo4jTempDB = /*#__PURE__*/function () {
   }, {
     key: "cleanAllDatabases",
     value: function () {
-      var _cleanAllDatabases = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+      var _cleanAllDatabases = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
         var neo4jSystemDriver, session, result, records, _iterator2, _step2, record, database;
 
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return _regenerator["default"].wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -485,9 +482,9 @@ var Neo4jTempDB = /*#__PURE__*/function () {
   }, {
     key: "runCypherOnDatabase",
     value: function () {
-      var _runCypherOnDatabase = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(database, version, cypher, params) {
+      var _runCypherOnDatabase = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(database, version, cypher, params) {
         var allowedVersions, cypherVersion, sessionDriver, session, startTime, query, run, result, keys, summary, records, endTime, runTime, stats, plan, r;
-        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        return _regenerator["default"].wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
@@ -588,7 +585,6 @@ var Neo4jTempDB = /*#__PURE__*/function () {
       });
     }
   }]);
-
   return Neo4jTempDB;
 }();
 

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { isInt, toString } from "neo4j-driver";
-import { isRelationship, isNode, isPath, isPathSegment } from "neo4j-driver/lib/graph-types.js";
+import { isRelationship, isNode, isPath, isPathSegment } from "neo4j-driver-core";
 import SubGraph from "./SubGraph.js";
 
 export default class CypherResult {
