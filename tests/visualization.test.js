@@ -89,14 +89,14 @@ test("returns data", async () => {
   expect(result.columns).toStrictEqual(["n", "r", "m"]);
   expect(result.json).toStrictEqual([
     {
-      n: { name: "YODA", _id: 2, _labels: ["Person"] },
-      r: { _id: 1, _start: 2, _end: 0, _type: "APPEARS_IN" },
-      m: { name: "Episode I: The Phantom Menace", _id: 0, _labels: ["Movie"] },
-    },
-    {
       n: { name: "R2-D2", _id: 1, _labels: ["Droid"] },
       r: { _id: 0, _start: 1, _end: 2, _type: "SPEAKS_WITH" },
       m: { name: "YODA", _id: 2, _labels: ["Person"] },
+    },
+    {
+      n: { name: "YODA", _id: 2, _labels: ["Person"] },
+      r: { _id: 1, _start: 2, _end: 0, _type: "APPEARS_IN" },
+      m: { name: "Episode I: The Phantom Menace", _id: 0, _labels: ["Movie"] },
     },
   ]);
   expect(result.stats.rows).toBe(2);
