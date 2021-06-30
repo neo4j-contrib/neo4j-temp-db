@@ -64,13 +64,13 @@ test("can clean up expired console databases", async () => {
 
   result = await session.run("SHOW DATABASES");
   databases = tempDb.filterConsoleDatabasesFromResult(result);
-  expect(databases.length).toBe(2);
+  const numOfDbs = databases.length;
 
   await tempDb.cleanDatabasesOlderThan(60 * 60 * 24); // 24h
 
   result = await session.run("SHOW DATABASES");
   databases = tempDb.filterConsoleDatabasesFromResult(result);
-  expect(databases.length).toBe(1);
+  expect(databases.length).toBe(numOfDbs - 1);
 
   await tempDb.cleanAllDatabases();
 });

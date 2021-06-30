@@ -1,4 +1,4 @@
-# neo4j-temp-db
+# @neo4j-labs/temp-dbs
 
 This library was created initialy to be used on https://portal.graphgist.org/ where users are able to run custom cypher queries directly on the browser, can change queries, and interact with the results.
 
@@ -11,7 +11,7 @@ To prevent the running out of memory on the database, each temporary database is
 
 ```javascript
 import neo4j from "neo4j-driver"
-import Neo4jTempDb from "neo4j-temp-db"
+import Neo4jTempDb from "@neo4j-labs/temp-dbs"
 
 const tempDb = new Neo4jTempDb(
   'neo4j://localhost',

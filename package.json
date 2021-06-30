@@ -1,5 +1,5 @@
 {
-  "name": "neo4j-temp-db",
+  "name": "@neo4j-labs/temp-dbs",
   "version": "0.2.1",
   "description": "expose a temporary database to run cyphers",
   "main": "dist/index.js",
