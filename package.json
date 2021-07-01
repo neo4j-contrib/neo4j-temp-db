@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/neo4j-contrib/neo4j-temp-db"
   },
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "expose a temporary database to run cyphers",
   "main": "dist/index.js",
   "scripts": {
