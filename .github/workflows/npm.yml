@@ -13,7 +13,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+
       - run: npm install
-      - run: npm publish --access public
+      - run: npm publish --access public --dry-run
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
