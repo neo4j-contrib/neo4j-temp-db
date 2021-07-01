@@ -1,5 +1,9 @@
 {
   "name": "@neo4j-labs/temp-dbs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neo4j-contrib/neo4j-temp-db"
+  },
   "version": "0.2.2",
   "description": "expose a temporary database to run cyphers",
   "main": "dist/index.js",
